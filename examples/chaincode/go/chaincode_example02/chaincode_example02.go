@@ -34,7 +34,7 @@ import (
 type SimpleChaincode struct {
 }
 
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	var A, B string    // Entities
 	var Aval, Bval int // Asset holdings
 	var err error
@@ -70,12 +70,65 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
+
+func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+    var key, value string	
+    var err error
+    fmt.Println("Storing the health parameters in hyperledger fabric...")
+
+    if len(args) != 10 {
+        return nil, errors.New("Incorrect number of arguments. Expecting 10. name of the key and value to set")
+    }
+
+    key = args[0]                            //rename for fun
+    value = args[1]
+    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
+    if err != nil {
+        return nil, err
+    }
+	
+	key = args[2]                            //rename for fun
+    value = args[3]
+    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
+    if err != nil {
+        return nil, err
+    }
+	
+	key = args[4]                            //rename for fun
+    value = args[5]
+    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
+    if err != nil {
+        return nil, err
+    }
+	
+	key = args[6]                            //rename for fun
+    value = args[7]
+    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
+    if err != nil {
+        return nil, err
+    }
+	
+	key = args[8]                            //rename for fun
+    value = args[9]
+    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
+    if err != nil {
+        return nil, err
+    }
+	
+    return nil, nil
+}
+
+
 // Transaction makes payment of X units from A to B
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if function == "delete" {
 		// Deletes an entity from its state
 		return t.delete(stub, args)
 	}
+	if function == "write" {
+		fmt.Println("Calling write()")
+        return t.write(stub, args)
+    }
 
 	var A, B string    // Entities
 	var Aval, Bval int // Asset holdings
@@ -130,7 +183,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 }
 
 // Deletes an entity from state
-func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) delete(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
@@ -147,7 +200,7 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 }
 
 // Query callback representing the query of a chaincode
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if function != "query" {
 		return nil, errors.New("Invalid query function name. Expecting \"query\"")
 	}
